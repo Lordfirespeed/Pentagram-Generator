@@ -10,32 +10,6 @@ export enum CircleModes {
 	filled = 'filled',
 }
 
-function filled(x: number, y: number, radius: number, ratio: number): boolean {
-	return distance(x, y, ratio) <= radius;
-}
-
-function fatfilled(x: number, y: number, radius: number, ratio: number): boolean {
-	return filled(x, y, radius, ratio) && !(
-		filled(x + 1, y, radius, ratio) &&
-		filled(x - 1, y, radius, ratio) &&
-		filled(x, y + 1, radius, ratio) &&
-		filled(x, y - 1, radius, ratio) &&
-		filled(x + 1, y + 1, radius, ratio) &&
-		filled(x + 1, y - 1, radius, ratio) &&
-		filled(x - 1, y - 1, radius, ratio) &&
-		filled(x - 1, y + 1, radius, ratio)
-	);
-}
-
-function thinfilled(x: number, y: number, radius: number, ratio: number): boolean {
-	return filled(x, y, radius, ratio) && !(
-		filled(x + 1, y, radius, ratio) &&
-		filled(x - 1, y, radius, ratio) &&
-		filled(x, y + 1, radius, ratio) &&
-		filled(x, y - 1, radius, ratio)
-	);
-}
-
 interface CircleState {
 	mode: CircleModes;
 	width: number;
@@ -151,6 +125,32 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 		};
 	}
 
+	private filled(x: number, y: number, radius: number, ratio: number): boolean {
+		return distance(x, y, ratio) <= radius;
+	}
+
+	private fatfilled(x: number, y: number, radius: number, ratio: number): boolean {
+		return this.filled(x, y, radius, ratio) && !(
+			this.filled(x + 1, y, radius, ratio) &&
+			this.filled(x - 1, y, radius, ratio) &&
+			this.filled(x, y + 1, radius, ratio) &&
+			this.filled(x, y - 1, radius, ratio) &&
+			this.filled(x + 1, y + 1, radius, ratio) &&
+			this.filled(x + 1, y - 1, radius, ratio) &&
+			this.filled(x - 1, y - 1, radius, ratio) &&
+			this.filled(x - 1, y + 1, radius, ratio)
+		);
+	}
+
+	private thinFilled(x: number, y: number, radius: number, ratio: number): boolean {
+		return this.filled(x, y, radius, ratio) && !(
+			this.filled(x + 1, y, radius, ratio) &&
+			this.filled(x - 1, y, radius, ratio) &&
+			this.filled(x, y + 1, radius, ratio) &&
+			this.filled(x, y - 1, radius, ratio)
+		);
+	}
+
 	public isFilled(x: number, y: number): boolean {
 		const bounds = this.getBounds();
 
@@ -159,13 +159,13 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 
 		switch (this.mode) {
 			case CircleModes.thick: {
-				return fatfilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
+				return this.fatfilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
 			}
 			case CircleModes.thin: {
-				return thinfilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
+				return this.thinFilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
 			}
 			default: {
-				return filled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
+				return this.this.filled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
 			}
 		}
 	}
