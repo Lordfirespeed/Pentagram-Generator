@@ -12,9 +12,7 @@ export enum CircleModes {
 
 interface CircleState {
 	mode: CircleModes;
-	width: number;
-	height: number;
-	force: boolean;
+	size: number;
 }
 
 export class Circle implements GeneratorInterface2D, ControlAwareInterface {
@@ -23,19 +21,13 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 
 	public readonly changeEmitter = new EventEmitter<void>();
 
-	private width: number;
-	private height: number;
-	private force: boolean;
+	private size: number;
 
-	private widthControl: Control<HTMLInputElement>;
-	private heightControl: Control<HTMLInputElement>;
-	private forceCircleControl : Control<HTMLInputElement>;
+	private sizeControl: Control<HTMLInputElement>;
 
 	constructor(private state: StateItem<CircleState>) {
 		this.mode = this.state.get('mode');
-		this.width = Math.min(2000, this.state.get('width'));
-		this.height = Math.min(2000, this.state.get('height'));
-		this.force = this.state.get('force');
+		this.size = Math.min(2000, this.state.get('size'));
 
 		for (const item of Object.keys(CircleModes)) {
 			const opt = document.createElement('option');
@@ -52,43 +44,15 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 			this.changeEmitter.trigger();
 		});
 
-		this.widthControl = makeInputControl('Shape', 'width', "number", this.width, () => {
-			if (this.force) {
-				this.heightControl.element.value = this.widthControl.element.value;
-				this.setHeight(parseInt(this.widthControl.element.value, 10));
-			}
-			this.setWidth(parseInt(this.widthControl.element.value, 10));
+		this.sizeControl = makeInputControl('Shape', 'size', "number", this.size, () => {
+			this.setSize(parseInt(this.sizeControl.element.value, 10));
 			this.changeEmitter.trigger();
 		});
-
-		this.heightControl = makeInputControl('Shape', 'height', "number", this.height, () => {
-			if (this.force) {
-				this.widthControl.element.value = this.heightControl.element.value;
-				this.setWidth(parseInt(this.heightControl.element.value, 10));
-			}
-			this.setHeight(parseInt(this.heightControl.element.value, 10));
-			this.changeEmitter.trigger();
-		});
-
-		this.forceCircleControl = makeInputControl('Shape', 'Force Circle', "checkbox", "1", () => {
-			// this.heightControl.element.value = this.widthControl.element.value;
-			this.setForce(this.forceCircleControl.element.checked);
-
-			// There's gotta be a cleaner way to do this, but this works for now avoiding recursive event calls
-			this.setHeight(this.width);
-			this.heightControl.element.value = this.widthControl.element.value;
-
-			this.changeEmitter.trigger();
-		});
-
-		this.forceCircleControl.element.checked = this.force;
 	}
 
 	public getControls(): Control[] {
 		return [
-			this.forceCircleControl,
-			this.widthControl,
-			this.heightControl,
+			this.sizeControl,
 			{ element: this.circleModeControlElm, label: 'border', group: 'Render' },
 		];
 	}
@@ -100,28 +64,18 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 		this.mode = mode;
 	}
 
-	private setWidth(width: number): void {
-		this.state.set('width', width);
-		this.width = width;
-	}
-
-	private setHeight(height: number): void {
-		this.state.set('height', height);
-		this.height = height;
-	}
-
-	private setForce(force: boolean): void {
-		this.state.set('force', force);
-		this.force = force;
+	private setSize(size: number): void {
+		this.state.set('size', size);
+		this.size = size;
 	}
 
 	public getBounds(): Bounds {
 		return {
 			minX: 0,
-			maxX: this.width,
+			maxX: this.size,
 
 			minY: 0,
-			maxY: this.height,
+			maxY: this.size,
 		};
 	}
 
@@ -149,6 +103,10 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 			this.filled(x, y + 1, radius, ratio) &&
 			this.filled(x, y - 1, radius, ratio)
 		);
+	}
+
+	private thicknessFilled(): void {
+		console.log("ee")
 	}
 
 	public isFilled(x: number, y: number): boolean {

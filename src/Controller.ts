@@ -87,9 +87,7 @@ export class MainController {
 
 	private generator: GeneratorInterface2D = new Circle(this.stateMananger.get("circle", {
 		mode: CircleModes.thick,
-		width: 5,
-		height: 5,
-		force: true,
+		size: 5
 	}));
 
 	private renderer: RendererInterface = new SvgRenderer(this.stateMananger.get("svgRenderer", {
