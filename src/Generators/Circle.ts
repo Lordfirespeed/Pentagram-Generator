@@ -129,7 +129,7 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 		return distance(x, y, ratio) <= radius;
 	}
 
-	private fatfilled(x: number, y: number, radius: number, ratio: number): boolean {
+	private fatFilled(x: number, y: number, radius: number, ratio: number): boolean {
 		return this.filled(x, y, radius, ratio) && !(
 			this.filled(x + 1, y, radius, ratio) &&
 			this.filled(x - 1, y, radius, ratio) &&
@@ -159,7 +159,7 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 
 		switch (this.mode) {
 			case CircleModes.thick: {
-				return this.fatfilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
+				return this.fatFilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
 			}
 			case CircleModes.thin: {
 				return this.thinFilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
