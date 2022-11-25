@@ -165,7 +165,7 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 				return this.thinFilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
 			}
 			default: {
-				return this.this.filled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
+				return this.filled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
 			}
 		}
 	}
