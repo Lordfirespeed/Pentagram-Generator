@@ -156,5 +156,4 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 			}
 		}
 	}
-
 }
