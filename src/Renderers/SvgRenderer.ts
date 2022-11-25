@@ -1,9 +1,9 @@
-import { GeneratorInterface2D } from "../Generators/GeneratorInterface2D";
-import { RendererInterface } from "./RendererInterface";
-import { Control, ControlAwareInterface, InfoControl, makeButtonControl, makeInputControl } from "../Controller";
-import { EventEmitter } from "../EventEmitter";
-import { xor } from "../Math";
-import { StateItem } from "../State";
+import {GeneratorInterface2D} from "../Generators/GeneratorInterface2D";
+import {RendererInterface} from "./RendererInterface";
+import {Control, ControlAwareInterface, InfoControl, makeButtonControl, makeInputControl} from "../Controller";
+import {EventEmitter} from "../EventEmitter";
+import {xor} from "../Math";
+import {StateItem} from "../State";
 
 function isSvgElement(el: Node): el is SVGElement {
 	return (el as SVGElement).namespaceURI === "http://www.w3.org/2000/svg";
@@ -148,9 +148,7 @@ export class SvgRenderer implements RendererInterface, ControlAwareInterface {
 			throw new Error(`SVG Renderer: No support for inline SVG. Please use a browser that supports SVG.`);
 		}
 
-		const svg = this.generateSVG(generator);
-
-		target.innerHTML = svg;
+		target.innerHTML = this.generateSVG(generator);
 		// const svgElm = target.firstChild as SVGElement;
 
 		this.lastSvg = target.querySelector('svg');
