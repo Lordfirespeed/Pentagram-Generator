@@ -1,7 +1,7 @@
 import { GeneratorInterface2D } from "./Generators/GeneratorInterface2D";
 import { SvgRenderer } from "./Renderers/SvgRenderer";
 import { RendererInterface } from "./Renderers/RendererInterface";
-import { Circle, CircleModes } from "./Generators/Circle";
+import { Circle } from "./Generators/Circle";
 import { StateHandler } from "./State";
 
 export interface Control<T extends HTMLElement = HTMLElement> {
@@ -86,7 +86,6 @@ export class MainController {
 	private stateMananger = new StateHandler();
 
 	private generator: GeneratorInterface2D = new Circle(this.stateMananger.get("circle", {
-		mode: CircleModes.thick,
 		size: 5,
 		thickness: 0.5
 	}));
