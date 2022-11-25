@@ -137,6 +137,7 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 	public isFilled(x: number, y: number): boolean {
 		const bounds = this.getBounds();
 
+		// Convert from graphical to local co-ordinates
 		x = -.5 * (bounds.maxX - (2 * x)) + .5;
 		y = -.5 * (bounds.maxY - (2 * y)) + .5;
 
