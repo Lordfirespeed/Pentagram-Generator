@@ -22,12 +22,14 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 	public readonly changeEmitter = new EventEmitter<void>();
 
 	private size: number;
+	private thickness: number;
 
 	private sizeControl: Control<HTMLInputElement>;
 
 	constructor(private state: StateItem<CircleState>) {
 		this.mode = this.state.get('mode');
 		this.size = Math.min(2000, this.state.get('size'));
+		this.thickness = 0.5;
 
 		for (const item of Object.keys(CircleModes)) {
 			const opt = document.createElement('option');
@@ -79,29 +81,29 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 		};
 	}
 
-	private filled(x: number, y: number, radius: number, ratio: number): boolean {
-		return distance(x, y, ratio) <= radius;
+	private filled(x: number, y: number, radius: number): boolean {
+		return distance(x, y) <= radius;
 	}
 
-	private fatFilled(x: number, y: number, radius: number, ratio: number): boolean {
-		return this.filled(x, y, radius, ratio) && !(
-			this.filled(x + 1, y, radius, ratio) &&
-			this.filled(x - 1, y, radius, ratio) &&
-			this.filled(x, y + 1, radius, ratio) &&
-			this.filled(x, y - 1, radius, ratio) &&
-			this.filled(x + 1, y + 1, radius, ratio) &&
-			this.filled(x + 1, y - 1, radius, ratio) &&
-			this.filled(x - 1, y - 1, radius, ratio) &&
-			this.filled(x - 1, y + 1, radius, ratio)
+	private fatFilled(x: number, y: number, radius: number): boolean {
+		return this.filled(x, y, radius) && !(
+			this.filled(x + 1, y, radius) &&
+			this.filled(x - 1, y, radius) &&
+			this.filled(x, y + 1, radius) &&
+			this.filled(x, y - 1, radius) &&
+			this.filled(x + 1, y + 1, radius) &&
+			this.filled(x + 1, y - 1, radius) &&
+			this.filled(x - 1, y - 1, radius) &&
+			this.filled(x - 1, y + 1, radius)
 		);
 	}
 
-	private thinFilled(x: number, y: number, radius: number, ratio: number): boolean {
-		return this.filled(x, y, radius, ratio) && !(
-			this.filled(x + 1, y, radius, ratio) &&
-			this.filled(x - 1, y, radius, ratio) &&
-			this.filled(x, y + 1, radius, ratio) &&
-			this.filled(x, y - 1, radius, ratio)
+	private thinFilled(x: number, y: number, radius: number): boolean {
+		return this.filled(x, y, radius) && !(
+			this.filled(x + 1, y, radius) &&
+			this.filled(x - 1, y, radius) &&
+			this.filled(x, y + 1, radius) &&
+			this.filled(x, y - 1, radius)
 		);
 	}
 
@@ -117,13 +119,13 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 
 		switch (this.mode) {
 			case CircleModes.thick: {
-				return this.fatFilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
+				return this.fatFilled(x, y, (bounds.maxX / 2));
 			}
 			case CircleModes.thin: {
-				return this.thinFilled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
+				return this.thinFilled(x, y, (bounds.maxX / 2));
 			}
 			default: {
-				return this.filled(x, y, (bounds.maxX / 2), bounds.maxX / bounds.maxY);
+				return this.filled(x, y, (bounds.maxX / 2));
 			}
 		}
 	}
