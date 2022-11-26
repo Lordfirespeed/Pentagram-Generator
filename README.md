@@ -1,7 +1,7 @@
-# Pixel Circle Generator
+# Pixel Pentagram Generator
 
-[![Node.js CI](https://github.com/donatj/Circle-Generator/actions/workflows/ci.yml/badge.svg)](https://github.com/donatj/Circle-Generator/actions/workflows/ci.yml)
+[![Node.js CI](https://github.com/Lordfirespeed/Pentagram-Generator/actions/workflows/ci.yml/badge.svg)](https://github.com/Lordfirespeed/Pentagram-Generator/actions/workflows/ci.yml)
 
-Generates Pixel Circles
+Generates Pixel Pentagrams
 
-Web frontend here: [https://donatstudios.com/PixelCircleGenerator](https://donatstudios.com/PixelCircleGenerator)
+No web frontend, I'm afraid
