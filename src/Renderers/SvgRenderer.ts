@@ -143,12 +143,12 @@ export class SvgRenderer implements RendererInterface, ControlAwareInterface {
 
 	private lastSvg: SVGElement | null = null;
 
-	public render(target: HTMLElement, generator: GeneratorInterface2D): void {
+	public render(target: HTMLElement, generators: GeneratorInterface2D[]): void {
 		if (!this.hasInlineSvg()) {
 			throw new Error(`SVG Renderer: No support for inline SVG. Please use a browser that supports SVG.`);
 		}
 
-		target.innerHTML = this.generateSVG(generator);
+		target.innerHTML = this.generateSVG(generators);
 		// const svgElm = target.firstChild as SVGElement;
 
 		this.lastSvg = target.querySelector('svg');
@@ -156,8 +156,8 @@ export class SvgRenderer implements RendererInterface, ControlAwareInterface {
 		this.scale();
 	}
 
-	private generateSVG(generator: GeneratorInterface2D): string {
-		const bounds = generator.getBounds();
+	private generateSVG(generators: GeneratorInterface2D[]): string {
+		const bounds = generators[0].getBounds();
 
 		const width = bounds.maxX - bounds.minX;
 		const height = bounds.maxY - bounds.minY;
@@ -171,7 +171,7 @@ export class SvgRenderer implements RendererInterface, ControlAwareInterface {
 		let fillCount = 0;
 		for (let y = bounds.minY; y < bounds.maxY; y++) {
 			for (let x = bounds.minX; x < bounds.maxX; x++) {
-				const filled = generator.isFilled(x, y);
+				const filled = generators.some(generator => generator.isFilled(x, y));
 				text += this.add(x, y, width, height, filled);
 
 				if (filled) {

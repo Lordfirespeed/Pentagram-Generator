@@ -2,6 +2,7 @@ import { GeneratorInterface2D } from "./Generators/GeneratorInterface2D";
 import { SvgRenderer } from "./Renderers/SvgRenderer";
 import { RendererInterface } from "./Renderers/RendererInterface";
 import { Circle } from "./Generators/Circle";
+import { Star } from "./Generators/Star";
 import { StateHandler } from "./State";
 
 export interface Control<T extends HTMLElement = HTMLElement> {
@@ -83,14 +84,20 @@ export function makeInputControl(
 
 export class MainController {
 
-	private stateMananger = new StateHandler();
+	private stateManager = new StateHandler();
 
-	private generator: GeneratorInterface2D = new Circle(this.stateMananger.get("circle", {
-		size: 5,
+	private circleGenerator: GeneratorInterface2D = new Circle(this.stateManager.get("circle", {
+		size: 20,
 		thickness: 1
 	}));
 
-	private renderer: RendererInterface = new SvgRenderer(this.stateMananger.get("svgRenderer", {
+	private starGenerator: GeneratorInterface2D = new Star(this.stateManager.get("star", {
+		size: 20,
+		thickness: 1,
+		points: 5
+	}))
+
+	private renderer: RendererInterface = new SvgRenderer(this.stateManager.get("svgRenderer", {
 		scale: 544,
 	}));
 
@@ -98,14 +105,15 @@ export class MainController {
 		this.renderControls();
 		this.render();
 
-		this.generator.changeEmitter.add(() => { this.render(); });
+		this.circleGenerator.changeEmitter.add(() => { this.render(); });
+		this.starGenerator.changeEmitter.add(() => { this.render() })
 		this.renderer.changeEmitter.add(() => { this.render(); });
 	}
 
 	private renderControls() {
 		this.controls.innerHTML = '';
 
-		const controlProviders = [this.generator, this.renderer];
+		const controlProviders = [this.circleGenerator, this.starGenerator, this.renderer];
 
 		const controlGroups: { [key: string]: Control[] } = {};
 
@@ -148,7 +156,6 @@ export class MainController {
 	}
 
 	private render() {
-		this.renderer.render(this.result, this.generator);
+		this.renderer.render(this.result, [this.circleGenerator, this.starGenerator]);
 	}
-
 }

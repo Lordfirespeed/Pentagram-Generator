@@ -5,7 +5,7 @@ export interface RendererInterface {
 
 	readonly changeEmitter : EventEmitter<void>;
 
-	render(target: HTMLElement, generator: GeneratorInterface2D): void;
+	render(target: HTMLElement, generators: GeneratorInterface2D[]): void;
 
 }
 
