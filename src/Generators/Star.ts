@@ -131,10 +131,14 @@ export class Star implements GeneratorInterface2D, ControlAwareInterface {
 
 	private filled(x: number, y: number): boolean {
 		const closeToLines = this.lines.map(([m, c]) => distanceToLine(x, y, m, c) < this.halfThickness)
+		// if close to no lines, do not fill
 		if (!closeToLines.some(e => e)) {return false}
+		// if within radius (and close to at least one line), always fill
 		if (distance(x, y) < this.radius) {return true}
+		// count how many lines the point is close to
 		const closeToNumberOfLines = pipe(closeToLines, count(e => e)).first
 		if (closeToNumberOfLines === undefined) {return false}
+		// if close to two or more lines (i.e. within the overlap) then fill
 		return closeToNumberOfLines >= 2;
 	}
 
