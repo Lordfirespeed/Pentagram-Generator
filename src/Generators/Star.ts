@@ -3,6 +3,7 @@ import { ControlAwareInterface, makeInputControl, Control } from "../Controller"
 import { distanceToLine, distance } from "../Math";
 import { EventEmitter } from "../EventEmitter";
 import { StateItem } from "../State";
+import { pipe, count } from 'iter-ops';
 
 interface StarState {
 	size: number;
@@ -129,9 +130,12 @@ export class Star implements GeneratorInterface2D, ControlAwareInterface {
 	}
 
 	private filled(x: number, y: number): boolean {
-		return this.lines.some(([m, c]) => {
-			return distanceToLine(x, y, m, c) < this.halfThickness && distance(x, y) < this.radius
-		});
+		const closeToLines = this.lines.map(([m, c]) => distanceToLine(x, y, m, c) < this.halfThickness)
+		if (!closeToLines.some(e => e)) {return false}
+		if (distance(x, y) < this.radius) {return true}
+		const closeToNumberOfLines = pipe(closeToLines, count(e => e)).first
+		if (closeToNumberOfLines === undefined) {return false}
+		return closeToNumberOfLines >= 2;
 	}
 
 	public isFilled(x: number, y: number, bounds: Bounds): boolean {

@@ -21,6 +21,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "iter-ops": "^2.6.1",
     "robust-point-in-polygon": "^1.0.3"
   }
 }
