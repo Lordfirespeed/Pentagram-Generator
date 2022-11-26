@@ -15,8 +15,6 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 
 	private size: number;
 	private thickness: number;
-	private thicknessSliderMin = 1000;
-	private thicknessSliderMax = 10000;
 
 	private radius: number
 
@@ -34,10 +32,10 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 			this.changeEmitter.trigger();
 		});
 
-		this.thicknessControl = makeInputControl('Circle', 'thickness', "range", this.thicknessSliderMin, (val)=> {
-			this.setThickness(parseInt(val, 10))
-			this.changeEmitter.trigger()
-		}, {min: this.thicknessSliderMin.toString(), max: this.thicknessSliderMax.toString()});
+		this.thicknessControl = makeInputControl('Circle', 'thickness', "number", this.thickness, () => {
+			this.setThickness(parseFloat(this.thicknessControl.element.value));
+			this.changeEmitter.trigger();
+		});
 	}
 
 	public getControls(): Control[] {
@@ -53,19 +51,13 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 		this.radius = size/2;
 	}
 
-	private setThickness(slider: number): void {
-		this.thickness = 1 + (slider - this.thicknessSliderMin) / (this.thicknessSliderMax - this.thicknessSliderMin) * (this.radius);
-		this.state.set('thickness', this.thickness);
+	private setThickness(thickness: number): void {
+		this.state.set('thickness', thickness);
+		this.thickness = thickness
 	}
 
 	public getBounds(): Bounds {
-		return {
-			minX: 0,
-			maxX: this.size,
-
-			minY: 0,
-			maxY: this.size,
-		};
+		return new Bounds(0, this.size, 0, this.size)
 	}
 
 	private is_within_radius(x: number, y: number, radius: number): boolean {
@@ -76,8 +68,7 @@ export class Circle implements GeneratorInterface2D, ControlAwareInterface {
 		return this.is_within_radius(x, y, this.radius) && !(this.is_within_radius(x, y, this.radius - this.thickness))
 	}
 
-	public isFilled(x: number, y: number): boolean {
-		const bounds = this.getBounds();
+	public isFilled(x: number, y: number, bounds: Bounds): boolean {
 
 		// Convert from graphical to local co-ordinates
 		x = -.5 * (bounds.maxX - (2 * x)) + .5;

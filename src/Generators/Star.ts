@@ -16,11 +16,10 @@ export class Star implements GeneratorInterface2D, ControlAwareInterface {
 
 	private size: number;
 	private thickness: number;
-	private thicknessSliderMin = 1000;
-	private thicknessSliderMax = 10000;
 	private points: number;
 
-	private radius: number
+	private radius: number;
+	private halfThickness: number;
 	private pointJump: number;
 	private lines: [number, number][];
 
@@ -34,6 +33,7 @@ export class Star implements GeneratorInterface2D, ControlAwareInterface {
 		this.points = 5;
 
 		this.radius = this.size / 2;
+		this.halfThickness = this.thickness / 2;
 		this.pointJump = Math.ceil(this.points / 4)
 		this.lines = [];
 		this.generateLines()
@@ -43,15 +43,15 @@ export class Star implements GeneratorInterface2D, ControlAwareInterface {
 			this.changeEmitter.trigger();
 		});
 
-		this.thicknessControl = makeInputControl('Star', 'thickness', "range", this.thicknessSliderMin, (val)=> {
-			this.setThickness(parseInt(val, 10))
-			this.changeEmitter.trigger()
-		}, {min: this.thicknessSliderMin.toString(), max: this.thicknessSliderMax.toString()});
+		this.thicknessControl = makeInputControl('Star', 'thickness', "number", this.thickness, () => {
+			this.setThickness(parseFloat(this.thicknessControl.element.value));
+			this.changeEmitter.trigger();
+		});
 
-		this.pointsControl = makeInputControl('Star', 'points', "range", 5, (val)=> {
-			this.setPoints(parseInt(val, 10))
-			this.changeEmitter.trigger()
-		}, {min: "3", max: "9"});
+		this.pointsControl = makeInputControl('Star', 'points', "number", this.points, () => {
+			this.setPoints(parseInt(this.pointsControl.element.value, 10))
+			this.changeEmitter.trigger();
+		});
 	}
 
 	public getControls(): Control[] {
@@ -69,14 +69,17 @@ export class Star implements GeneratorInterface2D, ControlAwareInterface {
 		this.generateLines()
 	}
 
-	private setThickness(slider: number): void {
-		this.thickness = 1 + (slider - this.thicknessSliderMin) / (this.thicknessSliderMax - this.thicknessSliderMin) * 10;
-		this.state.set('thickness', this.thickness);
+	private setThickness(thickness: number): void {
+		this.state.set('thickness', thickness);
+		this.thickness = thickness;
+		this.halfThickness = thickness/2;
 	}
 
-	private setPoints(slider: number): void {
-		this.points = slider;
-		this.pointJump = Math.ceil(this.points / 4)
+	private setPoints(points: number): void {
+		points = Math.min(Math.max(3, points), 9)
+		this.state.set('points', points)
+		this.points = points;
+		this.pointJump = Math.ceil(points / 4)
 		this.generateLines()
 	}
 
@@ -122,23 +125,16 @@ export class Star implements GeneratorInterface2D, ControlAwareInterface {
 	}
 
 	public getBounds(): Bounds {
-		return {
-			minX: 0,
-			maxX: this.size,
-
-			minY: 0,
-			maxY: this.size,
-		};
+		return new Bounds(0, this.size, 0, this.size)
 	}
 
 	private filled(x: number, y: number): boolean {
 		return this.lines.some(([m, c]) => {
-			return distanceToLine(x, y, m, c) < this.thickness && distance(x, y) < this.radius
+			return distanceToLine(x, y, m, c) < this.halfThickness && distance(x, y) < this.radius
 		});
 	}
 
-	public isFilled(x: number, y: number): boolean {
-		const bounds = this.getBounds();
+	public isFilled(x: number, y: number, bounds: Bounds): boolean {
 
 		// Convert from graphical to local co-ordinates
 		x = -.5 * (bounds.maxX - (2 * x)) + .5;

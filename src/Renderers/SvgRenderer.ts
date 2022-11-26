@@ -1,4 +1,4 @@
-import {GeneratorInterface2D} from "../Generators/GeneratorInterface2D";
+import {GeneratorInterface2D, Bounds} from "../Generators/GeneratorInterface2D";
 import {RendererInterface} from "./RendererInterface";
 import {Control, ControlAwareInterface, InfoControl, makeButtonControl, makeInputControl} from "../Controller";
 import {EventEmitter} from "../EventEmitter";
@@ -157,7 +157,7 @@ export class SvgRenderer implements RendererInterface, ControlAwareInterface {
 	}
 
 	private generateSVG(generators: GeneratorInterface2D[]): string {
-		const bounds = generators[0].getBounds();
+		const bounds = Bounds.encompass(generators.map(generator => generator.getBounds()))
 
 		const width = bounds.maxX - bounds.minX;
 		const height = bounds.maxY - bounds.minY;
@@ -171,7 +171,7 @@ export class SvgRenderer implements RendererInterface, ControlAwareInterface {
 		let fillCount = 0;
 		for (let y = bounds.minY; y < bounds.maxY; y++) {
 			for (let x = bounds.minX; x < bounds.maxX; x++) {
-				const filled = generators.some(generator => generator.isFilled(x, y));
+				const filled = generators.some(generator => generator.isFilled(x, y, bounds));
 				text += this.add(x, y, width, height, filled);
 
 				if (filled) {
@@ -185,12 +185,18 @@ export class SvgRenderer implements RendererInterface, ControlAwareInterface {
 		this.stacksOf16.setValue(`${(fillCount / 16).toFixed(1)}`);
 
 		for (let ix = 0; ix < svgWidth; ix += this.dFull) {
-			const fill = "#bbbbbb";
-			text += `<rect x="${(ix + (this.dWidth / 2))}" y="0" fill="${fill}" width="${this.dBorder}" height="${svgHeight}" opacity=".4" />`;
+			let fill = "#bbbbbb";
+			if (ix % 32 == 0) {
+				fill = "#252525";
+			}
+			text += `<rect x="${(ix + (this.dWidth / 2))}" y="0" fill="${fill}" width="${this.dBorder}" height="${svgHeight}" opacity=".6" />`;
 		}
 
 		for (let iy = 0; iy < svgHeight; iy += this.dFull) {
-			const fill = "#bbbbbb";
+			let fill = "#bbbbbb";
+			if (iy % 32 == 0) {
+				fill = "#252525";
+			}
 			text += `<rect x="0" y="${(iy + (this.dWidth / 2))}" fill="${fill}" width="${svgWidth}" opacity=".6" height="${this.dBorder}"/>`;
 		}
 
